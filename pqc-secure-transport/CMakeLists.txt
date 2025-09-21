@@ -21,6 +21,18 @@ target_include_directories(pqc
     $<INSTALL_INTERFACE:include>
 )
 
+# Optional pqm4 integration: if the pqm4 sources are vendored or added as a
+# git submodule under third_party/pqm4, include that directory so targets can
+# link to pqm4 implementations (Kyber/Dilithium). The third_party/pqm4 stub
+# provides an interface target `pqm4::pqm4` so this will not break builds when
+# pqm4 is not present.
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/pqm4/CMakeLists.txt)
+  message(STATUS "Including third_party/pqm4 subdirectory for PQC primitives")
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../third_party/pqm4 ${CMAKE_CURRENT_BINARY_DIR}/third_party_pqm4)
+else()
+  message(STATUS "third_party/pqm4 not found; build will use pqm4 stub or fallback placeholders")
+endif()
+
 # Compile definitions for hardening (can be adjusted per platform)
 target_compile_options(pqc PRIVATE
   $<$<C_COMPILER_ID:GNU>:-Wall -Wextra -O2 -fno-builtin -fwrapv -fno-tree-vectorize>
