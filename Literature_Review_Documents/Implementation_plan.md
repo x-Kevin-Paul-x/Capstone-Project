@@ -19,7 +19,7 @@
 
 ## Corrected Cryptography Stack (short)
 
-- KEM: CRYSTALS-Kyber-768 (liboqs) — session key establishment (NIST Cat 3).
+   - KEM: CRYSTALS-Kyber-768 (pqm4 preferred for embedded builds) — session key establishment (NIST Cat 3).
 - Signatures: CRYSTALS-Dilithium-III — node identity and certs (NIST Cat 3).
 - AEAD: Ascon-128a for per-message confidentiality/integrity; AES-256-GCM as alternate on hardware-accelerated platforms.
 - Optional/Hybrid: ECDH(P-256) + Kyber-768 for transitional interop (documented, opt-in).
@@ -127,7 +127,7 @@ int pqc_decrypt(pqc_session_t* s, const uint8_t* in, size_t inlen,
 ```
 
 3. Implementation notes
-   - Use liboqs or OQS-OpenSSL provider for desktop prototypes.
+   - Use pqm4 for embedded and constrained-target builds (preferred). For desktop prototypes, lightweight wrappers or OQS-OpenSSL can be used as needed.
    - For embedded microbenchmarks, use pqm4 or optimized C implementations and document build flags and trade-offs.
 
 ---
@@ -232,7 +232,7 @@ Purpose: Ensure reproducibility, traceability, and clear grading evidence.
 
 ## Appendix: Simple Protocol Sequence (handshake + data plane)
 
-1. Bootstrapping: Node obtains Dilithium cert from test CA (out-of-band).
+ 1. Bootstrapping: Node obtains Dilithium cert from test CA (out-of-band).
 2. Handshake:
    - A -> B: CertA (Dilithium-signed), nonceA
    - B -> A: CertB, nonceB, Kyber-encaps(ciphertextB)
@@ -251,3 +251,21 @@ This file is the updated, corrected, and documented Implementation Plan. Follow-
 - Commit this file with a clear ADR referencing the corrections.
 - Create `docs/` folder with ADR templates and initial threat model.
 - Scaffold `pqc-secure-transport` repo structure and starter CMake files.
+
+
+Progress update (2025-09-22):
+- Phase 1 (Research Foundation & Architecture Design) - COMPLETE. The repository now contains the Phase 1 artifacts: ADRs, threat model, test plan, and a scaffolded `pqc-secure-transport` with API stubs.
+- pqm4: A pqm4 stub directory was added at `third_party/pqm4/` with guidance to add the real pqm4 sources as a submodule or vendor the minimal required algorithms.
+- Protocol spec: `docs/protocol.md` added describing handshake, KDF inputs, envelope layout, and rekey policy.
+- Requirements Traceability Matrix: `docs/RTM.md` added to tie requirements to artifacts and tests.
+- CA tooling: Script templates and a placeholder helper were added under `scripts/ca/` and `tools/ca_helper/`. The helper currently writes placeholder keys/certs and will perform real pqm4-backed keygen/sign when `pqm4` is integrated.
+
+Next recommended actions (short):
+- Add pqm4 as a git submodule or vendor selected sources into `third_party/pqm4` and update `tools/ca_helper` to call pqm4 APIs to generate Dilithium keypairs and sign certs.
+- Replace the placeholder operations in `scripts/ca/*` with pqm4-based keygen/signing commands or the compiled `ca_helper` once pqm4 is available.
+- Implement `src/pqc.c` internals to call pqm4 Kyber/Dilithium implementations and Ascon-128a AEAD.
+
+Next recommended actions (short):
+- Add pqm4 as a git submodule or vendor selected sources into `third_party/pqm4`.
+- Replace the placeholder operations in `scripts/ca/*` with pqm4-based keygen/signing tools or a small helper binary that links pqm4.
+- Implement `src/pqc.c` internals to call pqm4 Kyber/Dilithium implementations and Ascon-128a AEAD.
