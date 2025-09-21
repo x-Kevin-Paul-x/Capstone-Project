@@ -87,3 +87,19 @@ Notes:
 - Use pqm4 (not liboqs) as the primary PQC implementation target (see implementation plan).
 - Keep the current public API in include/pqc.h stable; implement internals in src/pqc.c.
 - Mark each completed task with a PR and link ADRs/tests for traceability.
+
+## Updates (2025-09-22)
+
+- `tools/ca_helper` has been updated to include pqm4-aware code behind `PQM4_AVAILABLE` and its `CMakeLists.txt` now sets the compile definition when the pqm4 target is present. The helper still falls back to placeholder mode when pqm4 is not linked.
+- `third_party/pqm4/` contains the real `mupq/pqm4` submodule (nested submodules initialized). This enables direct linking to pqm4 primitives for host-side builds.
+
+## Immediate Phase 2 Actions (short)
+
+1. Link `tools/ca_helper` to pqm4 and update include paths so the helper writes full key material and uses the CA SK to sign node certs. (Owner: kevin, ETA: 2025-10-01)
+2. Implement KEM/signature/AEAD internals in `pqc-secure-transport/src/pqc.c` and add unit tests for handshake and AEAD flows. (Owner: kevin, ETA: 2025-10-15)
+3. Replace placeholder script fallbacks with calls to the compiled `ca_helper` or direct pqm4-based tools. (Owner: kevin, ETA: 2025-10-01)
+
+Status flags:
+
+- [x] `tools/ca_helper` pqm4-aware helper added (build-time conditional)
+- [ ] Link/compile `tools/ca_helper` against pqm4 and finalize key formats

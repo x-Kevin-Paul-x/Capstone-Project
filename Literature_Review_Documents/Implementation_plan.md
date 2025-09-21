@@ -30,6 +30,24 @@
 ## Layered Architecture (high level)
 
 ```
+
+## Current status & Next steps (updated 2025-09-22)
+
+Current status:
+
+- Phase 1 (Research Foundation & Architecture Design) - COMPLETE. The repository contains ADRs, threat model, test plan, and a scaffolded `pqc-secure-transport` with API stubs.
+- `third_party/pqm4/` — the `mupq/pqm4` submodule is present and nested submodules initialized (host-side PQC implementations available).
+- `tools/ca_helper/` — CA helper added and updated to be pqm4-aware (conditional compilation via `PQM4_AVAILABLE`); falls back to placeholders when pqm4 is not linked.
+- `docs/protocol.md` and `docs/RTM.md` — protocol spec and requirements traceability added.
+
+Next steps (short, actionable):
+
+1. Ensure `tools/ca_helper` is built against pqm4 so it writes full key bytes and uses the CA SK to sign node certs (update include paths and link flags in CMake).
+2. Implement `pqc-secure-transport/src/pqc.c` to use pqm4 Kyber (KEM) and Dilithium (sign/verify) and integrate Ascon-128a AEAD.
+3. Add unit tests for handshake, KEM encaps/decaps, AEAD tag verification, and replay protection. Add CI job to run them.
+4. Replace placeholder CA script fallbacks with calls to the compiled `ca_helper` or direct pqm4-based tools.
+
+If you want, I can proceed to (A) wire the CA helper to use the exact Dilithium variant headers and sizes and produce proper binary/PEM outputs, or (B) implement the pqc internals in `src/pqc.c`. Tell me which to do next.
 Application Layer (HRC control, telemetry, safety)
   └─ Unified PQC Layer (pqc-secure-transport)
        ├─ Identity (Dilithium certs & key mgmt)
