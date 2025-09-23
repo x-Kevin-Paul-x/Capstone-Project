@@ -6,8 +6,8 @@ Usage:
 import argparse
 from pathlib import Path
 
-# Choose backend here. PQC backend is now available.
-from backend_pqc import verify as verify_data
+# Choose backend here. Swap to a PQC backend implementation when available.
+from backend_rsa import verify as verify_data
 
 
 def main():

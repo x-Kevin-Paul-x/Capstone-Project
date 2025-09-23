@@ -35,29 +35,4 @@ Instructions: For each candidate, create an entry with the fields below and fill
 
 (Repeat above entries for each candidate.)
 
----
-
-## Candidate: CRYSTALS-Dilithium2
-- Category: Signature
-- Algorithm (reference): CRYSTALS-Dilithium
-- Source / Implementation: pyca/cryptography library (using a wrapper around the official clean reference implementation)
-- Target parameter set / security level: NIST level 2
-- Public key size: 1312 bytes
-- Private key size: 2528 bytes
-- Signature size (if applicable): 2420 bytes
-- Encapsulation / Decapsulation ciphertext size (if KEM): N/A
-- Typical CPU time (sign / verify / encapsulate / decapsulate):
-  - Sign: 1,355,434 cycles (Intel Skylake)
-  - Verify: 327,362 cycles (Intel Skylake)
-- RAM / stack usage estimate: TBD after implementation and profiling on target hardware.
-- Flash / binary size impact: TBD after implementation and profiling on target hardware.
-- Implementation notes: Using the `cryptography` library, which is a well-maintained and widely used cryptographic library in Python. The underlying implementation is expected to be constant-time.
-- Interoperability concerns: None. The `cryptography` library is widely used.
-- Test vectors used: TBD, will use standard test vectors.
-- Benchmarks (attach outputs or reference files): TBD
-- Risk assessment: Low. Dilithium is a NIST standard.
-- Recommendation: Adopt
-- Decision date: 2025-09-23
-- Decision owner: Jules
-
 Template created automatically. Use this file to track measurements and finalize algorithm selections for the main implementation plan.
