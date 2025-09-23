@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant CI as CI/CD Pipeline
+    participant REPO as Firmware Repository
+    participant DEV as Robot Device
+    participant TPM as TPM/Secure Element
+    participant BOOT as Bootloader
+    participant FW as Firmware
+    participant KMS as Key Management Service
+
+    Note over CI,KMS: Firmware Build & Signing Phase
+    CI->>CI: Build firmware binary
+    CI->>CI: Sign with Dilithium private key
+    CI->>REPO: Publish signed firmware + metadata
+    
+    Note over KMS,TPM: Key Provisioning Phase
+    KMS->>TPM: Provision public key bundle
+    KMS->>TPM: Store device identity keys
+    
+    Note over DEV,FW: Device Boot Phase
+    DEV->>BOOT: Power-on / Reset
+    BOOT->>TPM: Request public key bundle
+    TPM-->>BOOT: Return verification keys
+    BOOT->>REPO: Request firmware update (OTA)
+    REPO-->>BOOT: Send signed firmware
+    
+    BOOT->>BOOT: Verify Dilithium signature
+    alt Signature Valid
+        BOOT->>FW: Load and execute firmware
+        FW->>FW: Initialize robot systems
+        Note right of FW: Boot Success
+    else Signature Invalid
+        BOOT->>BOOT: Enter recovery mode
+        BOOT->>BOOT: Rollback to previous version
+        Note right of BOOT: Boot Failure - Recovery
+    end

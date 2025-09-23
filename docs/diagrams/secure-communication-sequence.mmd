@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant ROBOT as Robot Device
+    participant NET as Network Stack
+    participant API as Cloud API
+    participant KMS as Key Management Service
+
+    Note over ROBOT,KMS: Hybrid TLS Handshake
+    ROBOT->>API: ClientHello + Supported Cipher Suites
+    API-->>ROBOT: ServerHello + Certificate + Kyber Public Key
+    
+    ROBOT->>ROBOT: Generate ECDH keypair
+    ROBOT->>ROBOT: Encapsulate Kyber KEM
+    ROBOT->>API: ClientKeyExchange (ECDH + Kyber Ciphertext)
+    
+    API->>API: Decapsulate Kyber KEM
+    API->>API: Derive hybrid session key (ECDH + Kyber)
+    
+    Note over ROBOT,API: Session Established
+    ROBOT<<->>API: Encrypted application data
+    
+    Note over ROBOT,API: Message-Level Authentication
+    ROBOT->>ROBOT: Sign critical message with Dilithium
+    ROBOT->>API: Send signed message
+    API->>API: Verify Dilithium signature
+    API-->>ROBOT: Acknowledge message
