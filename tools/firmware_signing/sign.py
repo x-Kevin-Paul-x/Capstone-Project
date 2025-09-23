@@ -8,8 +8,8 @@ If `--genkey` is specified, a keypair will be generated and saved to `private.pe
 import argparse
 from pathlib import Path
 
-# Choose backend here. Swap to a PQC backend implementation when available.
-from backend_rsa import generate_keypair, sign as sign_data
+# Choose backend here. PQC backend is now available.
+from backend_pqc import generate_keypair, sign as sign_data
 
 
 def main():

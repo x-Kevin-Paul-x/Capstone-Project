@@ -1,6 +1,6 @@
 # Firmware Signing Prototype
 
-This prototype demonstrates signing a firmware binary and verifying it with a pluggable backend. It uses RSA as a placeholder backend; replace `backend_rsa.py` with PQC bindings when available (see `backend_pqc_stub.py`).
+This prototype demonstrates signing a firmware binary and verifying it with a pluggable backend. It now uses CRYSTALS-Dilithium as the backend.
 
 Requirements
 - Python 3.9+
@@ -31,7 +31,3 @@ Run tests (pytest):
 pip install -r requirements.txt
 pytest -q
 ```
-
-Extending to PQC
-- Implement a real PQC backend with the same API as `backend_rsa.py`. See `backend_pqc_stub.py` for the API surface.
-- Consider `liboqs` (Open Quantum Safe) or `PQClean` wrappers. When available, update `sign.py`/`verify.py` imports to point to the PQC backend.

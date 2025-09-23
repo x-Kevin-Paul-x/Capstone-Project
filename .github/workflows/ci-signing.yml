@@ -1,0 +1,38 @@
+name: Sign Firmware
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sign-firmware:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r tools/firmware_signing/requirements.txt
+          pip install dilithium-py
+
+      - name: Sign firmware
+        env:
+          SIGNER_PRIVATE_KEY: ${{ secrets.SIGNER_PRIVATE_KEY }}
+        run: |
+          echo "$SIGNER_PRIVATE_KEY" > private.pem
+          python tools/firmware_signing/sign.py --in firmware/minimal_firmware.bin --key private.pem --out firmware.sig
+
+      - name: Upload signature artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: signed-firmware-signature
+          path: firmware.sig
